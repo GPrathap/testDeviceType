@@ -1,0 +1,8 @@
+
+{
+  "deviceType": {
+    "label": "ipen",
+    "category": "virtual",
+    "downloadAgentUri": "ipen/device/download"
+  }
+}

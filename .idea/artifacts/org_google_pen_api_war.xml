@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="org.google.pen.api:war">
+    <output-path>$PROJECT_DIR$/component/api/target</output-path>
+    <root id="archive" name="org.google.pen.api.war">
+      <element id="artifact" artifact-name="org.google.pen.api:war exploded" />
+    </root>
+  </artifact>
+</component>

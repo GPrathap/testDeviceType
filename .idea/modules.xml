@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/component/analytics/org.google.pen.analytics.iml" filepath="$PROJECT_DIR$/component/analytics/org.google.pen.analytics.iml" />
+      <module fileurl="file://$PROJECT_DIR$/component/api/org.google.pen.api.iml" filepath="$PROJECT_DIR$/component/api/org.google.pen.api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/feature/feature/org.google.pen.feature.iml" filepath="$PROJECT_DIR$/feature/feature/org.google.pen.feature.iml" />
+      <module fileurl="file://$PROJECT_DIR$/component/plugin/org.google.pen.plugin.iml" filepath="$PROJECT_DIR$/component/plugin/org.google.pen.plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/component/ui/org.google.pen.ui.iml" filepath="$PROJECT_DIR$/component/ui/org.google.pen.ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pen.iml" filepath="$PROJECT_DIR$/pen.iml" />
+      <module fileurl="file://$PROJECT_DIR$/component/pen-component.iml" filepath="$PROJECT_DIR$/component/pen-component.iml" />
+      <module fileurl="file://$PROJECT_DIR$/feature/pen-feature.iml" filepath="$PROJECT_DIR$/feature/pen-feature.iml" />
+    </modules>
+  </component>
+</project>
