@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><components xmlns:scr="http://www.osgi.org/xmlns/scr/v1.0.0">
+    <scr:component enabled="true" immediate="true" name="org.google.pen.plugin.internal.ServiceComponent">
+        <implementation class="org.google.pen.plugin.internal.ServiceComponent"/>
+        <property name="service.pid" value="org.google.pen.plugin.internal.ServiceComponent"/>
+        <reference name="event.output.adapter.service" interface="org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService" cardinality="1..1" policy="dynamic" bind="setOutputEventAdapterService" unbind="unsetOutputEventAdapterService"/>
+    </scr:component>
+</components>

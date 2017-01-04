@@ -103,11 +103,6 @@
 			<version>4.1</version>
             <scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.wso2.carbon.devicemgt-plugins</groupId>
-			<artifactId>org.wso2.carbon.device.mgt.iot</artifactId>
-            <scope>provided</scope>
-		</dependency>
         <dependency>
             <groupId>org.google</groupId>
             <artifactId>${project-base-package}.plugin</artifactId>

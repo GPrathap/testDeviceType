@@ -31,6 +31,7 @@ import java.util.List;
 
 public class DeviceTypeManagerService implements DeviceManagementService {
     private DeviceManager deviceManager;
+    private OperationMonitoringTaskConfig operationMonitoringConfigs;
 
     @Override
     public String getType() {
@@ -39,12 +40,13 @@ public class DeviceTypeManagerService implements DeviceManagementService {
 
     @Override
     public OperationMonitoringTaskConfig getOperationMonitoringConfig() {
-        return null;
+        return operationMonitoringConfigs;
     }
 
     @Override
     public void init() throws DeviceManagementException {
         this.deviceManager = new DeviceTypeManager();
+        this.operationMonitoringConfigs =  new OperationMonitoringTaskConfig();
     }
 
     @Override

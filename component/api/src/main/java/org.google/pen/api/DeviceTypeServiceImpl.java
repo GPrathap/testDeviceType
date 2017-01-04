@@ -21,17 +21,19 @@ package org.google.pen.api;
 import org.google.pen.api.dto.DeviceJSON;
 import org.google.pen.api.dto.SensorRecord;
 import org.google.pen.api.util.APIUtil;
+import org.google.pen.api.util.ZipArchive;
 import org.google.pen.api.util.ZipUtil;
 import org.google.pen.plugin.constants.DeviceTypeConstants;
-import org.google.pen.api.DeviceTypeService;
+
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.analytics.dataservice.commons.SORT;
+import org.google.pen.plugin.exception.DeviceMgtPluginException;
 import org.wso2.carbon.analytics.dataservice.commons.SortByField;
+import org.wso2.carbon.analytics.dataservice.commons.SortType;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
-import org.wso2.carbon.apimgt.annotations.api.API;
+
 import org.wso2.carbon.apimgt.application.extension.APIManagementProviderService;
 import org.wso2.carbon.apimgt.application.extension.dto.ApiApplicationKey;
 import org.wso2.carbon.apimgt.application.extension.exception.APIManagerException;
@@ -41,9 +43,8 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
-import org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.DeviceType;
-import org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.Feature;
-import org.wso2.carbon.device.mgt.iot.util.ZipArchive;
+
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
 import org.wso2.carbon.identity.jwt.client.extension.JWTClient;
 import org.wso2.carbon.identity.jwt.client.extension.dto.AccessTokenInfo;
 import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
@@ -78,9 +79,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * This is the API which is used to control and manage device type functionality
  */
-@SuppressWarnings("NonJaxWsWebServices")
-@API(name = "ipen", version = "1.0.0", context = "/ipen", tags = "ipen")
-@DeviceType(value = "ipen")
 public class DeviceTypeServiceImpl implements DeviceTypeService {
 
     private static final String KEY_TYPE = "PRODUCTION";
@@ -116,8 +114,6 @@ public class DeviceTypeServiceImpl implements DeviceTypeService {
      */
     @Path("device/{deviceId}/change-status")
     @POST
-    @Feature(code = "change-status", name = "Change status of sensor: on/off",
-            description = "Change status of sensor: on/off")
     public Response changeStatus(@PathParam("deviceId") String deviceId,
                                  @QueryParam("state") String state,
                                  @Context HttpServletResponse response) {
@@ -169,17 +165,16 @@ public class DeviceTypeServiceImpl implements DeviceTypeService {
             sensorTableName = DeviceTypeConstants.SENSOR_TYPE2_EVENT_TABLE;
         }
         try {
-            if (!APIUtil.getDeviceAccessAuthorizationService().isUserAuthorized(new DeviceIdentifier(deviceId,
-                    DeviceTypeConstants.DEVICE_TYPE))) {
+            if (!APIUtil.getDeviceAccessAuthorizationService().isUserAuthorized(
+                    new DeviceIdentifier(deviceId, DeviceTypeConstants.DEVICE_TYPE),
+                    DeviceGroupConstants.Permissions.DEFAULT_STATS_MONITOR_PERMISSIONS)) {
                 return Response.status(Response.Status.UNAUTHORIZED.getStatusCode()).build();
             }
-            if (sensorTableName != null) {
-                List<SortByField> sortByFields = new ArrayList<>();
-                SortByField sortByField = new SortByField("meta_time", SORT.ASC, false);
-                sortByFields.add(sortByField);
-                List<SensorRecord> sensorRecords = APIUtil.getAllEventsForDevice(sensorTableName, query, sortByFields);
-                return Response.status(Response.Status.OK.getStatusCode()).entity(sensorRecords).build();
-            }
+            List<SortByField> sortByFields = new ArrayList<>();
+            SortByField sortByField = new SortByField("time", SortType.ASC);
+            sortByFields.add(sortByField);
+            List<SensorRecord> sensorRecords = APIUtil.getAllEventsForDevice(sensorTableName, query, sortByFields);
+            return Response.status(Response.Status.OK.getStatusCode()).entity(sensorRecords).build();
         } catch (AnalyticsException e) {
             String errorMsg = "Error on retrieving stats on table " + sensorTableName + " with query " + query;
             log.error(errorMsg);
@@ -188,7 +183,6 @@ public class DeviceTypeServiceImpl implements DeviceTypeService {
             log.error(e.getErrorMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
     /**
@@ -213,7 +207,7 @@ public class DeviceTypeServiceImpl implements DeviceTypeService {
                 return Response.status(Response.Status.NOT_ACCEPTABLE.getStatusCode()).build();
             }
         } catch (DeviceManagementException e) {
-            log.error(e.getErrorMessage(), e);
+            log.error(e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
         } catch (DeviceAccessAuthorizationException e) {
             log.error(e.getErrorMessage(), e);
@@ -248,7 +242,7 @@ public class DeviceTypeServiceImpl implements DeviceTypeService {
                 return Response.status(Response.Status.NOT_ACCEPTABLE.getStatusCode()).build();
             }
         } catch (DeviceManagementException e) {
-            log.error(e.getErrorMessage(), e);
+            log.error(e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
         } catch (DeviceAccessAuthorizationException e) {
             log.error(e.getErrorMessage(), e);
@@ -276,7 +270,7 @@ public class DeviceTypeServiceImpl implements DeviceTypeService {
             Device device = APIUtil.getDeviceManagementService().getDevice(deviceIdentifier);
             return Response.ok().entity(device).build();
         } catch (DeviceManagementException e) {
-            log.error(e.getErrorMessage(), e);
+            log.error(e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
         } catch (DeviceAccessAuthorizationException e) {
             log.error(e.getErrorMessage(), e);
@@ -306,7 +300,7 @@ public class DeviceTypeServiceImpl implements DeviceTypeService {
             Device[] devices = userDevicesforFirealarm.toArray(new Device[]{});
             return Response.ok().entity(devices).build();
         } catch (DeviceManagementException e) {
-            log.error(e.getErrorMessage(), e);
+            log.error(e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
         }
     }
@@ -346,6 +340,9 @@ public class DeviceTypeServiceImpl implements DeviceTypeService {
             log.error(ex.getMessage(), ex);
             return Response.status(500).entity(ex.getMessage()).build();
         } catch (UserStoreException ex) {
+            log.error(ex.getMessage(), ex);
+            return Response.status(500).entity(ex.getMessage()).build();
+        } catch (DeviceMgtPluginException ex) {
             log.error(ex.getMessage(), ex);
             return Response.status(500).entity(ex.getMessage()).build();
         }
@@ -388,35 +385,41 @@ public class DeviceTypeServiceImpl implements DeviceTypeService {
     }
 
     private ZipArchive createDownloadFile(String owner, String deviceName, String sketchType)
-            throws DeviceManagementException, JWTClientException, APIManagerException,
-            UserStoreException {
+            throws DeviceManagementException, APIManagerException, JWTClientException,
+            UserStoreException, DeviceMgtPluginException {
         //create new device id
         String deviceId = shortUUID();
-        if (apiApplicationKey == null) {
-            String applicationUsername = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm()
-                    .getRealmConfiguration().getAdminUserName();
-            applicationUsername = applicationUsername + "@" + APIUtil.getAuthenticatedUserTenantDomain();
-            APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
-            String[] tags = {DeviceTypeConstants.DEVICE_TYPE};
-            apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(
-                    DeviceTypeConstants.DEVICE_TYPE, tags, KEY_TYPE, applicationUsername, true);
-        }
-        JWTClient jwtClient = APIUtil.getJWTClientManagerService().getJWTClient();
-        String scopes = "device_type_" + DeviceTypeConstants.DEVICE_TYPE + " device_" + deviceId;
-        AccessTokenInfo accessTokenInfo = jwtClient.getAccessToken(apiApplicationKey.getConsumerKey(),
-                apiApplicationKey.getConsumerSecret(), owner + "@" + APIUtil.getAuthenticatedUserTenantDomain(), scopes);
-
-        //create token
-        String accessToken = accessTokenInfo.getAccessToken();
-        String refreshToken = accessTokenInfo.getRefreshToken();
         boolean status = register(deviceId, deviceName);
         if (!status) {
             String msg = "Error occurred while registering the device with " + "id: " + deviceId + " owner:" + owner;
             throw new DeviceManagementException(msg);
         }
+        if (apiApplicationKey == null) {
+            String applicationUsername =
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm().getRealmConfiguration()
+                            .getAdminUserName();
+            APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
+            String[] tags = {DeviceTypeConstants.DEVICE_TYPE};
+            apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(
+                    DeviceTypeConstants.DEVICE_TYPE, tags, KEY_TYPE, applicationUsername, true,
+                    DeviceTypeConstants.APIM_APPLICATION_TOKEN_VALIDITY_PERIOD);
+        }
+        JWTClient jwtClient = APIUtil.getJWTClientManagerService().getJWTClient();
+        String scopes = " device_" + deviceId;
+        AccessTokenInfo accessTokenInfo = jwtClient.getAccessToken(apiApplicationKey.getConsumerKey(),
+                apiApplicationKey.getConsumerSecret(), owner,
+                scopes);
+        String accessToken = accessTokenInfo.getAccessToken();
+        String refreshToken = accessTokenInfo.getRefreshToken();
+
+        if (!status) {
+            String msg = "XMPP Account was not created for device - " + deviceId + " of owner - " + owner +
+                    ".XMPP might have been disabled in org.wso2.carbon.device.mgt.iot" +
+                    ".common.config.server.configs";
+            throw new DeviceManagementException(msg);
+        }
         ZipUtil ziputil = new ZipUtil();
-        ZipArchive zipFile = ziputil.createZipFile(owner, APIUtil.getTenantDomainOftheUser(), sketchType,
-                deviceId, deviceName, accessToken, refreshToken);
-        return zipFile;
+        return ziputil.createZipFile(owner, sketchType, deviceId, deviceName, apiApplicationKey.toString(),
+                accessToken, refreshToken);
     }
 }

@@ -3,6 +3,11 @@
   "deviceType": {
     "label": "ipen",
     "category": "virtual",
-    "downloadAgentUri": "ipen/device/download"
+    "downloadAgentUri": "ipen/device/download",
+    "features": {
+      "change-status": {
+        "icon" : "fw-dial-up"
+      }
+    }
   }
 }

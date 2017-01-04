@@ -368,7 +368,7 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.httpcomponents.wso2:httpcore:4.3.0.wso2v1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: commons-fileupload.wso2:commons-fileupload:1.2.0.wso2v1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: commons-logging:commons-logging:1.1.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: commons-httpclient.wso2:commons-httpclient:3.1.0.wso2v2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: commons-httpclient.wso2:commons-httpclient:3.1.0.wso2v1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.commons.ssl:not-yet-commons-ssl:0.3.9" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.wso2.tomcat:tomcat:7.0.59.wso2v1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.wso2.tomcat:tomcat-servlet-api:7.0.59.wso2v1" level="project" />

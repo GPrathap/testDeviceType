@@ -20,6 +20,8 @@ package org.google.pen.api.util;
 
 import org.google.pen.api.dto.SensorRecord;
 
+import org.wso2.carbon.analytics.api.AnalyticsDataAPIUtil;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
 import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.analytics.dataservice.core.AnalyticsDataServiceUtils;
@@ -169,11 +171,12 @@ public class APIUtil {
                 sortByFields);
         List<String> recordIds = getRecordIds(resultEntries);
         AnalyticsDataResponse response = analyticsDataAPI.get(tenantId, tableName, 1, null, recordIds);
-        Map<String, SensorRecord> sensorDatas = createSensorData(AnalyticsDataServiceUtils.listRecords(
+        Map<String, SensorRecord> sensorDatas = createSensorData(AnalyticsDataAPIUtil.listRecords(
                 analyticsDataAPI, response));
         List<SensorRecord> sortedSensorData = getSortedSensorData(sensorDatas, resultEntries);
         return sortedSensorData;
     }
+
 
     public static List<SensorRecord> getSortedSensorData(Map<String, SensorRecord> sensorDatas,
                                                          List<SearchResultEntry> searchResults) {
@@ -235,5 +238,17 @@ public class APIUtil {
             throw new IllegalStateException(msg);
         }
         return outputEventAdapterService;
+    }
+
+    public static PlatformConfigurationManagementService getTenantConfigurationManagementService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        PlatformConfigurationManagementService tenantConfigurationManagementService =
+                (PlatformConfigurationManagementService) ctx.getOSGiService(PlatformConfigurationManagementService.class, null);
+        if (tenantConfigurationManagementService == null) {
+            String msg = "Tenant configuration Management service not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return tenantConfigurationManagementService;
     }
 }

@@ -51,7 +51,7 @@ From: 'an unknown organization'
 
   - commons.fileupload.wso2 (http://wso2.org) commons-fileupload.wso2:commons-fileupload:bundle:1.2.0.wso2v1
 
-  - commons.httpclient.wso2 (http://wso2.org) commons-httpclient.wso2:commons-httpclient:bundle:3.1.0.wso2v2
+  - commons.httpclient.wso2 (http://wso2.org) commons-httpclient.wso2:commons-httpclient:bundle:3.1.0.wso2v1
 
   - commons.io.wso2 (http://wso2.org) commons-io.wso2:commons-io:bundle:2.4.0.wso2v1
 

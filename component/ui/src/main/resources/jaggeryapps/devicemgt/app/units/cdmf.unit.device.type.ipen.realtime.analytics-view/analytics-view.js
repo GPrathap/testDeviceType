@@ -18,19 +18,32 @@
 
 function onRequest(context) {
     var log = new Log("stats.js");
+    var carbonServer = require("carbon").server;
     var device = context.unit.params.device;
-    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
+    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var constants = require("/app/modules/constants.js");
-    var websocketEndpoint = devicemgtProps["httpsURL"].replace("https", "wss");
-    var tokenPair = session.get(constants.ACCESS_TOKEN_PAIR_IDENTIFIER);
+    var websocketEndpoint = devicemgtProps["wssURL"].replace("https", "wss");
+    var jwtService = carbonServer.osgiService(
+        'org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService');
+    var jwtClient = jwtService.getJWTClient();
+    var encodedClientKeys = session.get(constants["ENCODED_TENANT_BASED_WEB_SOCKET_CLIENT_CREDENTIALS"]);
     var token = "";
-    if (tokenPair) {
-        token = tokenPair.accessToken;
+    if (encodedClientKeys) {
+        var tokenUtil = require("/app/modules/oauth/token-handler-utils.js")["utils"];
+        var resp = tokenUtil.decode(encodedClientKeys).split(":");
+        var tokenPair = jwtClient.getAccessToken(resp[0], resp[1], context.user.username,"default", {});
+        if (tokenPair) {
+            token = tokenPair.accessToken;
+        }
+        websocketEndpoint = websocketEndpoint + "/secured-websocket/org.wso2.iot.devices.temperature/1.0.0?"
+            + "deviceId=" + device.deviceIdentifier + "&deviceType=" + device.type;
+        var websocketToken= {'name':'websocket-token','value': token, 'path':'/', "maxAge":18000};
+        response.addCookie(websocketToken);
     }
     var websocketEndpointForStream1 = websocketEndpoint + "/secured-outputui/org.wso2.iot.devices.ink/1.0.0?"
-        + "token=" + token + "&deviceId=" + device.deviceIdentifier + "&deviceType=" + device.type;
+        + "deviceId=" + device.deviceIdentifier + "&deviceType=" + device.type;
     var websocketEndpointForStream2 = websocketEndpoint + "/secured-outputui/org.wso2.iot.devices.bolt/1.0.0?"
-        + "token=" + token + "&deviceId=" + device.deviceIdentifier + "&deviceType=" + device.type;
+       + "deviceId=" + device.deviceIdentifier + "&deviceType=" + device.type;
     return {
         "device": device,
         "websocketEndpointForStream1": websocketEndpointForStream1,

@@ -18,12 +18,10 @@
 
 package org.google.pen.api;
 
+import io.swagger.annotations.*;
 import org.google.pen.api.dto.DeviceJSON;
+import org.wso2.carbon.apimgt.annotations.api.*;
 
-import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.DeviceType;
-import org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.Feature;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Path;
@@ -43,9 +41,21 @@ import javax.ws.rs.core.Response;
 /**
  * This is the API which is used to control and manage device type functionality
  */
-@SuppressWarnings("NonJaxWsWebServices")
-@API(name = "ipen", version = "1.0.0", context = "/ipen", tags = "ipen")
-@DeviceType(value = "ipen")
+@SwaggerDefinition(
+        info = @Info(
+                version = "1.0.0",
+                title = "",
+                extensions = {
+                        @Extension(properties = {
+                                @ExtensionProperty(name = "name", value = "ipen"),
+                                @ExtensionProperty(name = "context", value = "/ipen"),
+                        })
+                }
+        ),
+        tags = {
+                @Tag(name = "ipen", description = "")
+        }
+)
 public interface DeviceTypeService {
 
     /**
@@ -55,7 +65,7 @@ public interface DeviceTypeService {
     @Path("device/register")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Permission(scope = "ipen_user", permissions = {"/permission/admin/device-mgt/user/register"})
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "device:firealarm:enroll", name = "", description = "")
     Response registerDevice(final DeviceJSON agentInfo);
 
     /**
@@ -64,9 +74,7 @@ public interface DeviceTypeService {
      */
     @Path("device/{deviceId}/change-status")
     @POST
-    @Feature(code = "change-status", name = "Change status of sensor: on/off",
-            description = "Change status of sensor: on/off")
-    @Permission(scope = "ipen_user", permissions = {"/permission/admin/device-mgt/change-status"})
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "device:firealarm:enroll", name = "", description = "")
     Response changeStatus(@PathParam("deviceId") String deviceId,
                           @QueryParam("state") String state,
                           @Context HttpServletResponse response);
@@ -82,7 +90,7 @@ public interface DeviceTypeService {
     @GET
     @Consumes("application/json")
     @Produces("application/json")
-    @Permission(scope = "ipen_user", permissions = {"/permission/admin/device-mgt/stats"})
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "device:firealarm:enroll", name = "", description = "")
     Response getSensorStats(@PathParam("deviceId") String deviceId, @QueryParam("from") long from,
                             @QueryParam("to") long to, @QueryParam("sensorType") String sensorType);
 
@@ -92,7 +100,7 @@ public interface DeviceTypeService {
      */
     @Path("/device/{device_id}")
     @DELETE
-    @Permission(scope = "ipen_user", permissions = {"/permission/admin/device-mgt/removeDevice"})
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "device:firealarm:enroll", name = "", description = "")
     Response removeDevice(@PathParam("device_id") String deviceId);
 
     /**
@@ -102,7 +110,7 @@ public interface DeviceTypeService {
      */
     @Path("/device/{device_id}")
     @PUT
-    @Permission(scope = "ipen_user", permissions = {"/permission/admin/device-mgt/updateDevice"})
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "device:firealarm:enroll", name = "", description = "")
     Response updateDevice(@PathParam("device_id") String deviceId, @QueryParam("name") String name);
 
     /**
@@ -114,7 +122,7 @@ public interface DeviceTypeService {
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Permission(scope = "ipen_user", permissions = {"/permission/admin/device-mgt/updateDevice"})
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "device:firealarm:enroll", name = "", description = "")
     Response getDevice(@PathParam("device_id") String deviceId);
 
     /**
@@ -125,7 +133,7 @@ public interface DeviceTypeService {
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Permission(scope = "ipen_user", permissions = {"/permission/admin/device-mgt/devices"})
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "device:firealarm:enroll", name = "", description = "")
     Response getAllDevices();
 
     /**
@@ -137,6 +145,6 @@ public interface DeviceTypeService {
     @Path("/device/download")
     @GET
     @Produces("application/zip")
-    @Permission(scope = "ipen_user", permissions = {"/permission/admin/device-mgt/download"})
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "device:firealarm:enroll", name = "", description = "")
     Response downloadSketch(@QueryParam("deviceName") String deviceName, @QueryParam("sketchType") String sketchType);
 }

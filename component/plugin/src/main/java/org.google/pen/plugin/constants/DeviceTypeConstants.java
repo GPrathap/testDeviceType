@@ -54,6 +54,7 @@ public class DeviceTypeConstants {
     public static final String CONTENT_TRANSFORMATION = "contentTransformer";
     public static final String CONTENT_VALIDATION = "contentValidator";
     public static final String RESOURCE = "resource";
+    public static final String APIM_APPLICATION_TOKEN_VALIDITY_PERIOD = "3600";
 
     public static final String USERNAME_PROPERTY_KEY = "username";
     public static final String DCR_PROPERTY_KEY = "dcrUrl";
